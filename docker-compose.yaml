@@ -4,12 +4,12 @@ services:
     ports:
       - "${PORT}:${PORT}"
     volumes:
-      - .:/url-shortner
-      - /url-shortner/node_modules
+      - .:/src/app
+      - /src/app/node_modules
     environment:
       - PORT=${PORT}
-      - MONGO_URI=mongodb://mongo:27017/url-shortner
-      - REDIS_URL=redis://redis:6379
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_URL=${REDIS_URL}
       - BASE_URL=${BASE_URL}
     depends_on:
       - mongo
@@ -26,7 +26,7 @@ services:
     networks:
       - url-net
   redis:
-    image: redis:alphine
+    image: redis:alpine
     ports:
       - "6379:6379"
     networks:

@@ -1,6 +1,6 @@
 FROM node:24-alpine
 
-WORKDIR /url-shortner
+WORKDIR /src/app
 
 COPY package*.json ./
 
