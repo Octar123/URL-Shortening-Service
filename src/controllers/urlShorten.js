@@ -59,16 +59,21 @@ export const shortenUrl = async(req, res) => {
             expiresAt = undefined;
         }
 
-        const newUrlMapping = Url.create({
+        const newUrlMapping = await Url.create({
             shortUrlId,
             originalUrl: long_url,
             expiresAt
         });
 
+        const baseURL = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+        const shortenUrl = `${baseURL}/${newUrlMapping.shortUrl}`;
+
         return res.status(201).json({
             message: 'URL shortened successfully',
-
-        })
+            shortURL: shortenUrl,
+            originalURL: newUrlMapping.originalUrl,
+            expiresAt: newUrlMapping.expiresAt
+        });
     }catch(err){
         console.error(`[Controller] Error: ${err}`);
 
