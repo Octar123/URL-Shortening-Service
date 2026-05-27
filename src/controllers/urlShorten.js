@@ -1,6 +1,6 @@
-import { redisClient } from "../config/redis";
-import Url from "../model/Url";
-import { checkAndRefillPool } from "../services/refillPool";
+import { redisClient } from "../config/redis.js";
+import Url from "../model/Url.js";
+import { checkAndRefillPool } from "../services/refillPool.js";
 
 const UNUSED_POOL = 'kgs:unused';
 const USED_POOL = 'kgs:used';
@@ -66,7 +66,10 @@ export const shortenUrl = async(req, res) => {
         });
 
         const baseURL = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
-        const shortenUrl = `${baseURL}/${newUrlMapping.shortUrl}`;
+        const shortenUrl = `${baseURL}/v1/url/${newUrlMapping.shortUrlId}`;
+
+        // console.log(newUrlMapping);
+        // console.log(baseURL);
 
         return res.status(201).json({
             message: 'URL shortened successfully',

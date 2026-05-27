@@ -1,4 +1,5 @@
 import redis from 'redis';
+import { checkAndRefillPool } from '../services/refillPool.js';
 
 export const redisClient = redis.createClient({
     url: process.env.REDIS_URL
@@ -11,4 +12,5 @@ export const connectRedis = async () => {
     if(!redisClient.isOpen){
         await redisClient.connect();
     }
+    checkAndRefillPool();
 };

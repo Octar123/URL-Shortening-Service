@@ -1,6 +1,6 @@
 import express from 'express';
-import { shortenUrl } from '../controllers/urlShorten';
-import { redirectURL} from '../controllers/redirectUrl';
+import { shortenUrl } from '../controllers/urlShorten.js';
+import { redirectURL} from '../controllers/redirectUrl.js';
 
 const router = express.Router();
 

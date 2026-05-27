@@ -1,5 +1,5 @@
-import { redisClient } from "../config/redis";
-import { generateShortKey } from "./keyGenerationService";
+import { redisClient } from "../config/redis.js";
+import { generateShortKey } from "./keyGenerationService.js";
 
 const UNUSED_POOL = "kgs:unused";
 const USED_POOL = "kgs:used";
@@ -11,13 +11,17 @@ export const checkAndRefillPool = async () => {
   try {
     const currentSize = await redisClient.sCard(UNUSED_POOL);
     console.log(`[KGS Logger] Current pool size: ${currentSize}`);
-
+    
     if (currentSize < threshold) {
-      const acquiredLock = await redisClient.set(LOCK_KEY, "locked", {
-        condition: "NX",
-        expiration: 10,
-      });
-
+        const acquiredLock = await redisClient.set(LOCK_KEY, "locked", {
+            condition: "NX",
+            expiration: {
+                type: 'EX',
+                value: 10
+            },
+        });
+        // console.log("Bankai")
+        
       if (!acquiredLock) {
         console.log(
           `[KGS Logger] Another process is already filling the pool.`,
