@@ -27,13 +27,17 @@ services:
       - url-net
   redis:
     image: redis:alpine
+    command: redis-server --appendonly yes --appendfsync everysec
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
     networks:
       - url-net
 
 volumes:
   mongo-data:
+  redis-data:
 
 networks:
   url-net:
