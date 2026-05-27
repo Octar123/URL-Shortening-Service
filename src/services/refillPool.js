@@ -4,6 +4,7 @@ import { generateShortKey } from "./keyGenerationService";
 const UNUSED_POOL = 'kgs:unused';
 const batchSize = 5000;
 const threshold = 2000;
+const LOCK_KEY = 'kgs:refill_lock';
 
 export const checkAndRefillPool = async () => {
     try{
@@ -11,18 +12,34 @@ export const checkAndRefillPool = async () => {
         console.log(`[KGS Logger] Current pool size: ${currentSize}`);
 
         if(currentSize < threshold){
+
+            const acquiredLock = await redisClient.set(LOCK_KEY, 'locked', {
+                condition: 'NX',
+                expiration: 10
+            })
+
+            if(!acquiredLock){
+                console.log(`[KGS Logger] Another process is already filling the pool.`);
+                return;
+            }
+
             console.log(`[KGS Logger] Pool low, Refilling keys`);
 
-            let freshKeys = [];
+            let freshKeysSet = new Set();
 
-            for(let i = 0; i < batchSize; i++){
-                freshKeys.push(generateShortKey());
+            while(freshKeysSet.size < batchSize){
+                freshKeysSet.add(generateShortKey());
             }
+
+            const freshKeys = Array.from(freshKeysSet);
 
             await redisClient.sAdd(UNUSED_POOL, freshKeys);
             console.log(`[KGS Logger] Pool replenished successfully`);
+
+            await redisClient.del(LOCK_KEY);
         }
     }catch(error){
-        console.error(`[KGS Logger] Failed to refill pool: ${error}`)
+        console.error(`[KGS Logger] Failed to refill pool: ${error}`);
+        await redisClient.del(LOCK_KEY).catch(() => {});
     }
 }
