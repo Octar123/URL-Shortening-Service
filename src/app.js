@@ -10,8 +10,8 @@ const app = express();
 app.use(express.json());
 
 const initializeServices = async () => {
-  await connectDB();
   await connectRedis();
+  await connectDB();
 };
 initializeServices();
 
