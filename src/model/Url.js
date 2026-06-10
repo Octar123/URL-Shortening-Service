@@ -19,7 +19,7 @@ const urlSchema = new mongoose.Schema({
     },
     expiresAt: {
         type: Date,
-        default: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Before just a new date is created which used to take time from startup of the server, but by passing anonymus funciton we calculates at object created
         index: {expires: 0}
     }
 });
